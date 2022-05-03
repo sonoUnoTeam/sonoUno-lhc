@@ -17,7 +17,8 @@ count_colors = 0
 
 
 def plot3D_init(figure):
-    global ax_transversal, ax_longitudinal
+    global ax_transversal, ax_longitudinal, fig
+    fig = figure
     figure.clf()
     # =============
     # First subplot
@@ -47,6 +48,30 @@ def plot3D_init(figure):
     figure.tight_layout()
     figure.canvas.draw()
     return ax_transversal, ax_longitudinal
+
+
+def plot_reset():
+    global ax_transversal, ax_longitudinal, fig
+    ax_longitudinal.cla()
+    ax_transversal.cla()
+    ax_transversal.set_xlabel('$X$')
+    ax_transversal.set_ylabel('$Y$')
+    ax_transversal.set_zlabel('$Z$')
+    ax_longitudinal.set_xlabel('$Z$')
+    ax_longitudinal.set_ylabel('$Y$')
+    ax_longitudinal.set_zlabel('$X$')
+    ax_transversal.set_xlim([-150, 150])
+    ax_transversal.set_ylim([-150, 150])
+    ax_transversal.set_zlim([-150, 150])
+    ax_longitudinal.set_xlim([-300, 300])
+    ax_longitudinal.set_ylim([-300, 300])
+    ax_longitudinal.set_zlim([-300, 300])
+    # Corte transversal
+    ax_transversal.view_init(90, 270)
+    ax_longitudinal.view_init(90, 270)
+    # Refresh plot
+    fig.tight_layout()
+    fig.canvas.draw()
 
 
 def get_plotcolours():
@@ -92,6 +117,9 @@ def plot_muontrack(track_elements, energy=3):
         color,
     )
     count_colors = count_colors + 1
+    # Refresh plot
+    fig.tight_layout()
+    fig.canvas.draw()
 
 
 def plot_innertrack(track_elements):
@@ -111,6 +139,9 @@ def plot_innertrack(track_elements):
         color,
     )
     count_colors = count_colors + 1
+    # Refresh plot
+    fig.tight_layout()
+    fig.canvas.draw()
 
 
 def plot_cluster(phi, theta, eta, amplitud=10):
@@ -133,3 +164,6 @@ def plot_cluster(phi, theta, eta, amplitud=10):
     # Plot
     ax_longitudinal.plot_surface(z, y, x, color='b')
     ax_transversal.plot_surface(x, y, z, color='b')
+    # Refresh plot
+    fig.tight_layout()
+    fig.canvas.draw()
