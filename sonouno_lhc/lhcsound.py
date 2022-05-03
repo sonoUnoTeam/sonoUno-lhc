@@ -374,7 +374,7 @@ pygame.mixer.init(
     allowedchanges=pygame.AUDIO_ALLOW_FREQUENCY_CHANGE,
 )
 # Set the path to open the tickmark
-bip_path = os.path.abspath(os.path.dirname(__file__)) + '/sound_module/sounds/bip.wav'
+bip_path = os.path.abspath(os.path.dirname(__file__)) + '\\bip.wav'
 # Open the bip tickmark
 rate1, bip = wavfile.read(bip_path, mmap=False)
 #
