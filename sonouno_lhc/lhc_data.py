@@ -123,6 +123,7 @@ def particles_sonification(
                         phi=float(track_elements[4]),
                         theta=float(track_elements[5]),
                         eta=float(track_elements[6]),
+                        amplitud=float(cluster_elements[3]) / 100,
                     )
                     cluster_tosonify.append(cluster)
             """
@@ -147,7 +148,12 @@ def particles_sonification(
                         3) a tone with different frequency: change from inner detector to red calorimeter
                         4) sound corresponding to the cluster with the continuous sound of the track of the muon
                         """
-                        sound = lhc_sonification.muontrack_withcluster()
+                        # For the amplitud of the sound we use the transverse energy
+                        # supposing a range of [0;100], we devide the value by 100
+                        # to normalize it.
+                        sound = lhc_sonification.muontrack_withcluster(
+                            float(cluster_elements[3]) / 100
+                        )
                     else:
                         """
                         1) bip: the beginning of the detector
@@ -155,7 +161,9 @@ def particles_sonification(
                         3) a tone with different frequency: change from inner detector to red calorimeter
                         4) sound corresponding to the cluster
                         """
-                        sound = lhc_sonification.singletrack_withcluster()
+                        sound = lhc_sonification.singletrack_withcluster(
+                            float(cluster_elements[3]) / 100
+                        )
                 else:
                     """
                     1) bip: the beginning of the detector
@@ -171,7 +179,9 @@ def particles_sonification(
                         + ' and '
                         + cluster_elements[0]
                     )
-                    sound = lhc_sonification.doubletrack_withcluster()
+                    sound = lhc_sonification.doubletrack_withcluster(
+                        float(cluster_elements[3]) / 100
+                    )
             else:
                 # The track don't point out a cluster
                 """
@@ -201,6 +211,7 @@ def particles_sonification(
                 phi=float(cluster_elements[4]),
                 theta=float(cluster_elements[5]),
                 eta=float(cluster_elements[6]),
+                amplitud=float(cluster_elements[3]) / 100,
             )
             """
             1) bip: the beginning of the detector
@@ -209,7 +220,7 @@ def particles_sonification(
             4) sound corresponding to the cluster
             """
             print('Sonifying ' + cluster_elements[0])
-            sound = lhc_sonification.cluster_only()
+            sound = lhc_sonification.cluster_only(float(cluster_elements[3]) / 100)
             lhc_sonification.play_sound(sound)
             lhc_sonification.add_array_savesound(sound)
             lhc_sonification.add_array_savesound(lhc_sonification.get_silence_1s())
