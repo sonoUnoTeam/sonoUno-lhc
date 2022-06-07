@@ -120,12 +120,8 @@ def get_cluster(amplitude):
     return cluster_sound
 
 
-def get_silence_2s():
-    return get_sine_wave(0, duration=2)
-
-
-def get_silence_1s():
-    return get_sine_wave(0, duration=1)
+def get_silence(duration):
+    return get_sine_wave(0, duration)
 
 
 def muontrack_withcluster(amplitude):
@@ -134,6 +130,7 @@ def muontrack_withcluster(amplitude):
     cluster_track = get_cluster(amplitude) + get_innersingletrack(duration=1)
     sound = np.append(sound, cluster_track)
     sound = np.append(sound, get_innersingletrack())
+    sound = np.append(sound, get_silence(0.5))
     return sound
 
 
@@ -164,7 +161,7 @@ def doubletrack_only():
 
 
 def cluster_only(amplitude):
-    sound = np.append(bip, get_silence_2s())
+    sound = np.append(bip, get_silence(2))
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     sound = np.append(sound, get_cluster(amplitude))
     return sound
