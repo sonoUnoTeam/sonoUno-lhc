@@ -14,7 +14,7 @@ Then if it is below the cut you play a "cluster" sound simultaneous with the "tr
 """
 # set up a figure twice as wide as it is tall
 fig = plt.figure(figsize=plt.figaspect(0.5))
-ax_transversal, ax_longitudinal = lhc_data.lhc_plot.plot3D_init(fig)
+lhc_data.lhc_plot.plot3D_init(fig)
 plt.pause(0.5)
 """
 Particle data file
@@ -32,22 +32,9 @@ count = 0
 for i in range(0, len(particles), 2):
     count = count + 1
     index = 0
-    sonified_cluster_list = []
-    sonified_tracks_list = []
     for tracks in particles[i]:
         element = 'Track'
-        sonified_tracks, sonified_cluster = lhc_data.particles_sonification(
-            index,
-            element,
-            particles[i],
-            particles[i + 1],
-            ax_transversal,
-            ax_longitudinal,
-            sonified_tracks_list,
-            sonified_cluster_list,
-        )
-        sonified_tracks_list = sonified_tracks_list + sonified_tracks
-        sonified_cluster_list = sonified_cluster_list + sonified_cluster
+        lhc_data.particles_sonification(index, element, particles[i], particles[i + 1])
         plt.pause(0.5)
         track = particles[i][index]
         track_elements = str(track).split()
@@ -59,18 +46,7 @@ for i in range(0, len(particles), 2):
     index = 0
     for cluster in particles[i + 1]:
         element = 'Cluster'
-        sonified_tracks, sonified_cluster = lhc_data.particles_sonification(
-            index,
-            element,
-            particles[i],
-            particles[i + 1],
-            ax_transversal,
-            ax_longitudinal,
-            sonified_tracks_list,
-            sonified_cluster_list,
-        )
-        sonified_tracks_list = sonified_tracks_list + sonified_tracks
-        sonified_cluster_list = sonified_cluster_list + sonified_cluster
+        lhc_data.particles_sonification(index, element, particles[i], particles[i + 1])
         plt.pause(0.5)
         time.sleep(3)
         index = index + 1

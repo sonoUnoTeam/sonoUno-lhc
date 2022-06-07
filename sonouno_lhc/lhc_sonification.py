@@ -4,6 +4,8 @@
 Created on Thu Apr 28 07:52:36 2022
 
 @author: sonounoteam
+
+This script is dedicated to sonification based on a LHC data set
 """
 
 import pygame
@@ -13,7 +15,9 @@ import numpy as np
 
 
 def sound_init():
-    # Initializate sound
+    """
+    Initializate the sound mixer with pygame to play sounds during plot display
+    """
     pygame.mixer.init(
         44100,
         -16,
@@ -24,6 +28,11 @@ def sound_init():
 
 
 def set_bip():
+    """
+    Open the sound bip and store it in a global var to use it later during the
+    sonification of particles. The bip represent the beginning of the particle
+    track, at the center of the inner detector.
+    """
     global bip
     # Set the path to open the tickmark
     bip_path = os.path.abspath(os.path.dirname(__file__)) + '/bip.wav'
@@ -100,6 +109,10 @@ def get_innerdoubletrack(duration=2):
 
 
 def get_tickmark_inner_calorimeter(freq=440, duration=0.1):
+    """
+    This method generate the sound of the tickmark that indicate the step from
+    the inner detector to the green calorimeter and return the array.
+    """
     note_freqs = get_piano_notes()
     freqF7 = note_freqs['F7']
     bip_calorimeter = get_sine_wave(freqF7, duration=0.1)
@@ -107,7 +120,10 @@ def get_tickmark_inner_calorimeter(freq=440, duration=0.1):
 
 
 def get_cluster(amplitude):
-    # Obtain a generic cluster sound
+    """
+    This method generate the sound of a cluster, setting the sound amplitude
+    depending on the cluster energy, and return the array.
+    """
     data = [300, 350, 600, 800, 1000, 800, 800, 1000, 700, 600]
     if amplitude != 0:
         amplitude = amplitude * 2000 + 100
@@ -121,10 +137,19 @@ def get_cluster(amplitude):
 
 
 def get_silence(duration):
+    """
+    This method generate the sound of a silence given the duration of it and
+    return the array.
+    """
     return get_sine_wave(0, duration)
 
 
 def muontrack_withcluster(amplitude):
+    """
+    This method generate the sound of a muon track with cluster and return
+    the array. Include tickmarks indicating the beginning and transition
+    between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_innersingletrack())
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     cluster_track = get_cluster(amplitude) + get_innersingletrack(duration=1)
@@ -135,6 +160,11 @@ def muontrack_withcluster(amplitude):
 
 
 def singletrack_withcluster(amplitude):
+    """
+    This method generate the sound of a single track with cluster and return
+    the array.Include tickmarks indicating the beginning and transition
+    between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_innersingletrack())
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     sound = np.append(sound, get_cluster(amplitude))
@@ -142,6 +172,11 @@ def singletrack_withcluster(amplitude):
 
 
 def doubletrack_withcluster(amplitude):
+    """
+    This method generate the sound of a double track with cluster and return
+    the array. Include tickmarks indicating the beginning and transition
+    between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_innerdoubletrack())
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     sound = np.append(sound, get_cluster(amplitude))
@@ -149,18 +184,33 @@ def doubletrack_withcluster(amplitude):
 
 
 def singletrack_only():
+    """
+    This method generate the sound of a simple track without cluster and return
+    the array. Include tickmarks indicating the beginning and transition
+    between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_innersingletrack())
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     return sound
 
 
 def doubletrack_only():
+    """
+    This method generate the sound of a double track without cluster and return
+    the array. Include tickmarks indicating the beginning and transition
+    between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_innerdoubletrack())
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     return sound
 
 
 def cluster_only(amplitude):
+    """
+    This method generate the sound of a cluster (taking in consideration the
+    cluster energy) and return the array. Include tickmarks indicating the
+    beginning and transition between inner detector and green calorimeter.
+    """
     sound = np.append(bip, get_silence(2))
     sound = np.append(sound, get_tickmark_inner_calorimeter())
     sound = np.append(sound, get_cluster(amplitude))
@@ -168,19 +218,45 @@ def cluster_only(amplitude):
 
 
 def play_sound(sound):
+    """
+    Use pygame and play the given array.
+    Parameters
+    ----------
+    sound : array, parameter to be sonified
+    """
     sound_play = pygame.mixer.Sound(sound.astype('int16'))
     sound_play.play()
 
 
 def array_savesound(array):
+    """
+    Parameters
+    ----------
+    array : array, parameter to be saved (this overwrite the global variable
+            sound_to_save). If you want to add info to the global variable see
+            add_array_savesound(array)
+    """
     global sound_to_save
     sound_to_save = array
 
 
 def add_array_savesound(array):
+    """
+    Parameters
+    ----------
+    array : array, parameter to be saved (this add the information to the global
+            variable sound_to_save). If you want to overwrite the global
+            variable see array_savesound(array)
+    """
     global sound_to_save
     sound_to_save = np.append(sound_to_save, array)
 
 
 def save_sound(sound_path):
+    """
+    Use the path provided to store the sound file in the computer
+    Parameters
+    ----------
+    sound_path : path where to save sound in wav
+    """
     wavfile.write(sound_path, rate=44100, data=sound_to_save.astype(np.int16))
