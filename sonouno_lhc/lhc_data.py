@@ -72,15 +72,17 @@ def particles_sonification(
     cluster_list,
     ax_transversal,
     ax_longitudinal,
+    sonified_tracks_list,
+    sonified_cluster_list,
     play_sound_status=True,
 ):
     # With each track calculate if it points out a cluster or not, if points a
     # cluster we will sonify the track and the cluster
-    global sonified_cluster_list, sonified_tracks_list, cluster_tosonify
+    global cluster_tosonify  # , sonified_cluster_list, sonified_tracks_list
     if index == 0:
         lhc_plot.set_count_colors(0)
-        sonified_cluster_list = []
-        sonified_tracks_list = []
+        # sonified_cluster_list = []
+        # sonified_tracks_list = []
     cluster_tosonify = []
     converted_photon = ' '
     track_list_2 = track_list.copy()
@@ -234,3 +236,4 @@ def particles_sonification(
             lhc_sonification.add_array_savesound(lhc_sonification.get_silence(1))
     else:
         print("problem with element!!!!")
+    return sonified_tracks_list, sonified_cluster_list
