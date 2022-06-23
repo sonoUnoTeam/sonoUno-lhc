@@ -1,0 +1,8 @@
+__pycache__/
+.DS_Store
+dist/
+outputs/
+profile.pstats
+profile.svg
+venv/
+

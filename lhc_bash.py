@@ -1,47 +1,26 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+ 
+from pathlib import Path
 
-import matplotlib.pyplot as plt
-from data_lhc import lhc_data
+from sonouno_lhc.lhc_data import sonify_subject
+from sonouno_lhc.io import extract_subjects
 
-"""
-calculates the square root of ( (φtrack-φcluster)squared+(θtrack-θcluster) squared)).
-If the track(s) point in 3-D to a cluster this value should be small* (<0.1?). 
-Then if it is below the cut you play a "cluster" sound simultaneous with the "track(s)" cluster.
-"""
-# set up a figure twice as wide as it is tall
-fig = plt.figure(figsize=plt.figaspect(0.5))
-lhc_data.lhc_plot.plot3D_init(fig)
-"""
-Particle data file
-"""
+OUTPUT_PATH = Path('outputs')
+OUTPUT_PATH.mkdir(exist_ok=True)
 
-"""Using lhc_data"""
-lines = lhc_data.openfile('sonification_reduced.txt')
-"""Using lhc_data"""
-particles = lhc_data.read_content(lines)
 
-lhc_data.lhc_sonification.sound_init()
-lhc_data.lhc_sonification.set_bip()
-count = 0
-for i in range(0, len(particles), 2):
-    count = count + 1
-    index = 0
-    for tracks in particles[i]:
-        element = 'Track'
-        lhc_data.particles_sonification(
-            index, element, particles[i], particles[i + 1], play_sound_status=False
-        )
-        index = index + 1
-    index = 0
-    for cluster in particles[i + 1]:
-        element = 'Cluster'
-        lhc_data.particles_sonification(
-            index, element, particles[i], particles[i + 1], play_sound_status=False
-        )
-        index = index + 1
-    plot_path = 'data_lhc/lhc_output/plot_dataset_' + str(count) + '.png'
-    plt.savefig(plot_path, format='png')
-    # Generate the wav file with the sonification
-    sound_path = 'data_lhc/lhc_output/sound_dataset_' + str(count) + '.wav'
-    lhc_data.lhc_sonification.save_sound(sound_path)
-    lhc_data.lhc_plot.plot_reset()
+def sonify_subjects(path: Path) -> None:
+    data = path.read_text().split('\n')
+    for subject in extract_subjects(data):
+        sound, fig = sonify_subject(subject)
+
+        # Save the plot
+        plot_path = OUTPUT_PATH / f'plot_dataset_{subject.id}.png'
+        fig.savefig(plot_path, format='png')
+
+        # Generate the wav file with the sonification
+        sound_path = OUTPUT_PATH / f'sound_dataset_{subject.id}.wav'
+        sound.to_wav(sound_path)
+
+
+sonify_subjects(Path('sonification_reduced.txt'))

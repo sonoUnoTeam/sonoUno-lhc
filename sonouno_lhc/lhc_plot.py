@@ -10,8 +10,43 @@ This script is dedicated to 3D plot generation based on a LHC data set
 
 import numpy as np
 
-# Global counters
-count_colors = 0
+from .models import Track
+
+
+class ColorGetter:
+    """A class to loop though a list of defined colors."""
+    COLORS = [
+        'blue',
+        'orange',
+        'green',
+        'red',
+        'purple',
+        'brown',
+        'pink',
+        'grey',
+        'olive',
+        'cyan',
+    ]
+
+    def __init__(self) -> None:
+        """The class constructor."""
+        self.counter = 0
+
+    def reset(self) -> None:
+        """Restarts from the first color."""
+        self.counter = 0
+
+    def change(self) -> None:
+        """Moves to the next color."""
+        self.counter += 1
+
+    def __call__(self) -> str:
+        """Returns the current color."""
+        return self.COLORS[self.counter % len(self.COLORS)]
+
+
+# Global counter for the colors
+current_color = ColorGetter()
 
 
 def plot3D_init(figure):
@@ -36,6 +71,7 @@ def plot3D_init(figure):
     ax_transversal.set_ylim([-150, 150])
     ax_transversal.set_zlim([-150, 150])
     ax_transversal.view_init(90, 270)
+
     # Longitudinal subplot
     # set up the axes
     ax_longitudinal = figure.add_subplot(1, 2, 2, projection='3d')
@@ -46,112 +82,43 @@ def plot3D_init(figure):
     ax_longitudinal.set_ylim([-300, 300])
     ax_longitudinal.set_zlim([-300, 300])
     ax_longitudinal.view_init(90, 270)
+
     # Refresh plot to update changes
     figure.tight_layout()
     figure.canvas.draw()
+    current_color.reset()
 
 
-def plot_reset():
+def plot_muontrack(track: Track, energy=3) -> None:
     """
-    Use the global vars (ax_transversal, ax_longitudinal, fig) to set the plot
-    as at the beginning.
-    """
-    global ax_transversal, ax_longitudinal, fig
-    # Transversal subplot
-    ax_transversal.cla()
-    ax_transversal.set_xlabel('$X$')
-    ax_transversal.set_ylabel('$Y$')
-    ax_transversal.set_zlabel('$Z$')
-    ax_transversal.set_xlim([-150, 150])
-    ax_transversal.set_ylim([-150, 150])
-    ax_transversal.set_zlim([-150, 150])
-    ax_transversal.view_init(90, 270)
-    # Longitudinal subplot
-    ax_longitudinal.cla()
-    ax_longitudinal.set_xlabel('$Z$')
-    ax_longitudinal.set_ylabel('$Y$')
-    ax_longitudinal.set_zlabel('$X$')
-    ax_longitudinal.set_xlim([-300, 300])
-    ax_longitudinal.set_ylim([-300, 300])
-    ax_longitudinal.set_zlim([-300, 300])
-    ax_longitudinal.view_init(90, 270)
-    # Refresh plot to update changes
-    fig.tight_layout()
-    fig.canvas.draw()
-
-
-def get_plotcolours():
-    """
-    Returns
-    -------
-    plot_colours : TYPE list, provide the possible colours to represent the
-        different tracks on the plot.
-    """
-    plot_colours = [
-        'blue',
-        'orange',
-        'green',
-        'red',
-        'purple',
-        'brown',
-        'pink',
-        'grey',
-        'olive',
-        'cyan',
-    ]
-    return plot_colours
-
-
-def get_count_colors():
-    """
-    Returns
-    -------
-    count_colors : TYPE int, represent the actual index of the color used to plot.
-    """
-    return count_colors
-
-
-def set_count_colors(value):
-    """
-    Parameters
-    ----------
-    value : TYPE int, represent the actual index of the color used to plot.
-    """
-    global count_colors
-    count_colors = value
-
-
-def plot_muontrack(track_elements, energy=3):
-    """
-    Plot the track of a muon, using the energy parameter to extend the track
+    Plots the track of a muon, using the energy parameter to extend the track
     outside the inner detector (muons pass all the detector layers).
 
-    Parameters
-    ----------
-    track_elements : TYPE list, contain the track elements
-    energy : TYPE int, OPTIONAL value, the default is 3.
+    Parameters:
+        track: The muon track to be displayed.
+        energy: The default is 3.
     """
-    global count_colors
-    color = get_plotcolours()[count_colors]
+    current_color.change()
+    color = current_color()
     ax_transversal.plot3D(
-        [float(track_elements[-6]), float(track_elements[-3]) * energy],
-        [float(track_elements[-5]), float(track_elements[-2]) * energy],
-        [float(track_elements[-4]), float(track_elements[-1]) * energy],
+        [track.field13, track.field16 * energy],
+        [track.field14, track.field17 * energy],
+        [track.field15, track.field18 * energy],
         color,
     )
     ax_longitudinal.plot3D(
-        [float(track_elements[-4]), float(track_elements[-1]) * energy],
-        [float(track_elements[-5]), float(track_elements[-2]) * energy],
-        [float(track_elements[-6]), float(track_elements[-3]) * energy],
+        [track.field15, track.field18 * energy],
+        [track.field14, track.field17 * energy],
+        [track.field13, track.field16 * energy],
         color,
     )
-    count_colors = count_colors + 1
+
     # Refresh plot to update changes
     fig.tight_layout()
     fig.canvas.draw()
 
 
-def plot_innertrack(track_elements):
+def plot_innertrack(track: Track) -> None:
     """
     Plot the track of all particles except muons.
 
@@ -159,41 +126,40 @@ def plot_innertrack(track_elements):
     ----------
     track_elements: TYPE list, contain the track elements
     """
-    global count_colors
-    color = get_plotcolours()[count_colors]
+    current_color.change()
+    color = current_color()
     ax_transversal.plot3D(
-        [float(track_elements[-6]), float(track_elements[-3])],
-        [float(track_elements[-5]), float(track_elements[-2])],
-        [float(track_elements[-4]), float(track_elements[-1])],
+        [track.field13, track.field16],
+        [track.field14, track.field17],
+        [track.field15, track.field18],
         color,
     )
     ax_longitudinal.plot3D(
-        [float(track_elements[-4]), float(track_elements[-1])],
-        [float(track_elements[-5]), float(track_elements[-2])],
-        [float(track_elements[-6]), float(track_elements[-3])],
+        [track.field15, track.field18],
+        [track.field14, track.field17],
+        [track.field13, track.field16],
         color,
     )
-    count_colors = count_colors + 1
+    
     # Refresh plot to update changes
     fig.tight_layout()
     fig.canvas.draw()
 
 
-def plot_cluster(phi, theta, eta, amplitud=10):
-    """
-    Plot the cluster using an sphere. Phi, theta and eta indicate the position
-    where the sphere has to be plotted.
+def plot_cluster(phi: float, theta: float, eta: float, amplitude: float = 10) -> None:
+    """Plots the cluster using an sphere.
+    
+    Phi, theta and eta indicate the position where the sphere has to be plotted.
 
     Parameters
     ----------
-    phi : TYPE float, phi value of the 3D sphere coordinates
-    theta : TYPE float, theta value of the 3D sphere coordinates
-    eta : TYPE float, eta value of the 3D sphere coordinates
-    amplitud : TYPE int, OPTIONAL value, the default is 10, represent the
-        cluster energy
+    phi: Phi value of the 3D sphere coordinates.
+    theta: Theta value of the 3D sphere coordinates
+    eta: Eta value of the 3D sphere coordinates.
+    amplitude: The cluster energy.
     """
-    if amplitud != 10:
-        amplitud = amplitud * 10 + 2
+    if amplitude != 10:
+        amplitude = amplitude * 10 + 2
     # Depending on eta value set the r coordinate, information proportionated
     # by WP5 team, REINFORCE project.
     if np.abs(eta) < 1.5:
@@ -207,9 +173,9 @@ def plot_cluster(phi, theta, eta, amplitud=10):
     # Make the sphere
     u = np.linspace(0, 2 * np.pi, 100)
     v = np.linspace(0, np.pi, 100)
-    x = amplitud * np.outer(np.cos(u), np.sin(v)) + x
-    y = amplitud * np.outer(np.sin(u), np.sin(v)) + y
-    z = amplitud * np.outer(np.ones(np.size(u)), np.cos(v)) + z
+    x = amplitude * np.outer(np.cos(u), np.sin(v)) + x
+    y = amplitude * np.outer(np.sin(u), np.sin(v)) + y
+    z = amplitude * np.outer(np.ones(np.size(u)), np.cos(v)) + z
     # Plot the sphere in the subplots
     ax_longitudinal.plot_surface(z, y, x, color='k')
     ax_transversal.plot_surface(x, y, z, color='k')
