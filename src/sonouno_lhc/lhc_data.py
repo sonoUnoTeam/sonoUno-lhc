@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 28 08:18:55 2022
-
-@author: sonounoteam
-
-This script open the file and apply specific transforms to it.
-"""
 from __future__ import annotations
 
 import math
@@ -25,36 +16,53 @@ from .models import Cluster, ParticleTrack, Event
 SECONDS_BETWEEN_ELEMENTS = 1
 
 
-def sonify_event(event: Event) -> tuple[AudioTrack, Figure]:
-    """Sonify one dataset."""
+def sonify_event(
+    event: Event, include_plot=True) -> tuple[AudioTrack, Figure | None]:
+    """Sonify one event.
+
+    Parameters:
+        event: The event to be sonify.
+        include_plot: If set to True, plot the event.
+
+    """
     print()
     print(event.id)
     print(len(event.id) * '=')
 
-    fig = plt.figure(figsize=plt.figaspect(0.5))
-    lhc_plot.plot3D_init(fig)
-    sonified_object_ids = set()
+    if include_plot:
+        fig = plt.figure(figsize=plt.figaspect(0.5))
+        lhc_plot.plot3D_init(fig)
+    else:
+        fig = None
 
     sound = AudioTrack(max_amplitude='int16')
     sonified_ids = set()
 
     for index, track in enumerate(event.tracks):
-        if track.id not in sonified_object_ids:
+        if track.id not in sonified_ids:
             track_sound = sonify_track(
-                sonified_ids, track, event.tracks[index+1:], event.clusters
+                sonified_ids,
+                track,
+                event.tracks[index+1:],
+                event.clusters,
+                include_plot,
             )
             sound.add_track(track_sound).add_blank(SECONDS_BETWEEN_ELEMENTS)
 
     for cluster in event.clusters:
         if cluster.id not in sonified_ids:
-            cluster_sound = sonify_cluster(cluster)
+            cluster_sound = sonify_cluster(cluster, include_plot)
             sound.add_track(cluster_sound).add_blank(SECONDS_BETWEEN_ELEMENTS)
 
     return sound, fig
 
 
 def sonify_track(
-    sonified_ids: set[str], track: ParticleTrack, other_tracks: list[ParticleTrack], clusters: list[Cluster]
+    sonified_ids: set[str],
+    track: ParticleTrack,
+    other_tracks: list[ParticleTrack],
+    clusters: list[Cluster],
+    include_plot: bool,
 ) -> AudioTrack:
     """
     This method allows to iterate through a given event ploting and sonifying
@@ -65,6 +73,7 @@ def sonify_track(
         track: The particule track to be sonified.
         other_tracks: The other particule tracks that have not been yet sonified.
         clusters: The clusters to be sonified.
+        include_plot: If set to True, plot the particle track.
     """
 
     cluster_tosonify = []
@@ -72,12 +81,13 @@ def sonify_track(
     # Restore variables
     converted_photon = ' '
  
-    if track.is_muon:
-        # If the track is a muon plot it
-        lhc_plot.plot_muontrack(track)
-    else:
-        # If the track is not a muon plot a simple track
-        lhc_plot.plot_innertrack(track)
+    if include_plot:
+        if track.is_muon:
+            # If the track is a muon plot it
+            lhc_plot.plot_muontrack(track)
+        else:
+            # If the track is not a muon plot a simple track
+            lhc_plot.plot_innertrack(track)
 
     # With each track calculate if it points out a cluster or not, if points a
     # cluster we will sonify the track and the cluster; and check if there
@@ -92,12 +102,13 @@ def sonify_track(
 
         # If the track points to the cluster, plot it and include it
         # in the list to sonify.
-        lhc_plot.plot_cluster(
-            phi=track.phi,
-            theta=track.theta,
-            eta=track.eta,
-            amplitude=cluster.energy / 100,
-        )
+        if include_plot:
+            lhc_plot.plot_cluster(
+                phi=track.phi,
+                theta=track.theta,
+                eta=track.eta,
+                amplitude=cluster.energy / 100,
+            )
         cluster_tosonify.append(cluster)
 
         # In addition, search if there is a close track
@@ -112,7 +123,8 @@ def sonify_track(
                 # to reproduce the converted photon sound
                 if track2.id not in sonified_ids:
                     sonified_ids.add(track2.id)
-                lhc_plot.plot_innertrack(track2)
+                if include_plot:
+                    lhc_plot.plot_innertrack(track2)
                 converted_photon = track2.id
                 print(converted_photon)
 
@@ -188,9 +200,7 @@ def sonify_track(
     return sound
 
 
-def sonify_cluster(
-    cluster: Cluster
-) -> AudioTrack:
+def sonify_cluster(cluster: Cluster, include_plot: bool) -> AudioTrack:
     """
     This method allows to iterate through a given event ploting and sonifying
     the data provided.
@@ -198,17 +208,17 @@ def sonify_cluster(
     Parameters:
         cluster: The cluster element.
         play_sound_status: If true, play the cluster sonification.
+        include_plot: If set to True, plot the cluster.
     """
 
-    # Plot the cluster
-    lhc_plot.plot_cluster(
-        phi=cluster.phi,
-        theta=cluster.theta,
-        eta=cluster.eta,
-        amplitude=cluster.energy / 100,
-    )
+    if include_plot:
+        lhc_plot.plot_cluster(
+            phi=cluster.phi,
+            theta=cluster.theta,
+            eta=cluster.eta,
+            amplitude=cluster.energy / 100,
+        )
 
-    # Sonify the cluster
     """
     1) bip: the beginning of the detector
     2) silence during 2 seconds: there are no track in the inner detector
