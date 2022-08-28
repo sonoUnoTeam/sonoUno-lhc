@@ -40,9 +40,6 @@ dynamic = ["version"]
 [project.urls]
 repository = "https://github.com/sonoUnoTeam/sonoUno-lhc"
 
-[tool.setuptools]
-packages = ["sonouno_lhc", "sonouno_lhc.data"]
-
 [tool.setuptools_scm]
 version_scheme = "post-release"
 fallback_version = "0.0.0"
