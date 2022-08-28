@@ -10,7 +10,7 @@ This script is dedicated to 3D plot generation based on a LHC data set
 
 import numpy as np
 
-from .models import Track
+from .models import ParticleTrack
 
 
 class ColorGetter:
@@ -89,7 +89,7 @@ def plot3D_init(figure):
     current_color.reset()
 
 
-def plot_muontrack(track: Track, energy=3) -> None:
+def plot_muontrack(track: ParticleTrack, energy=3) -> None:
     """
     Plots the track of a muon, using the energy parameter to extend the track
     outside the inner detector (muons pass all the detector layers).
@@ -118,7 +118,7 @@ def plot_muontrack(track: Track, energy=3) -> None:
     fig.canvas.draw()
 
 
-def plot_innertrack(track: Track) -> None:
+def plot_innertrack(track: ParticleTrack) -> None:
     """
     Plot the track of all particles except muons.
 

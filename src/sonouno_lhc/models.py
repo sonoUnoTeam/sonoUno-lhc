@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Track:
+class ParticleTrack:
     """Class representing a particule track."""
     id: str
     field1: str
@@ -27,9 +27,9 @@ class Track:
     field18: float
 
     @classmethod
-    def from_data(cls, line: str) -> 'Track':
+    def from_data(cls, line: str) -> 'ParticleTrack':
         id, f1, f2, f3, phi, theta, eta, f7, f8, f9, f10, is_muon, f12, f13, f14, f15, f16, f17, f18 = line.split()
-        return Track(
+        return ParticleTrack(
             id=id, field1=f1, field2=f2, field3=f3, phi=float(phi), theta=float(theta), eta=float(eta),
             field7=f7, field8=f8, field9=f9, field10=f10, is_muon=bool(int(is_muon)), field12=f12, field13=float(f13), field14=float(f14),
             field15=float(f15), field16=float(f16), field17=float(f17), field18=float(f18),
@@ -70,9 +70,9 @@ class Cluster:
 
 
 @dataclass
-class Subject:
+class Event:
     """Class representing a unit of work."""
     id: str
     description: str
-    tracks: list[Track]
+    tracks: list[ParticleTrack]
     clusters: list[Cluster]

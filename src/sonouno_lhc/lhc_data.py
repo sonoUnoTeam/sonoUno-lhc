@@ -20,16 +20,16 @@ from sonounolib import Track as AudioTrack
 
 from . import lhc_plot
 from . import lhc_sonification
-from .models import Cluster, Track, Subject
+from .models import Cluster, ParticleTrack, Event
 
 SECONDS_BETWEEN_ELEMENTS = 1
 
 
-def sonify_subject(subject: Subject) -> tuple[AudioTrack, Figure]:
+def sonify_event(event: Event) -> tuple[AudioTrack, Figure]:
     """Sonify one dataset."""
     print()
-    print(subject.id)
-    print(len(subject.id) * '=')
+    print(event.id)
+    print(len(event.id) * '=')
 
     fig = plt.figure(figsize=plt.figaspect(0.5))
     lhc_plot.plot3D_init(fig)
@@ -38,14 +38,14 @@ def sonify_subject(subject: Subject) -> tuple[AudioTrack, Figure]:
     sound = AudioTrack(max_amplitude='int16')
     sonified_ids = set()
 
-    for index, track in enumerate(subject.tracks):
+    for index, track in enumerate(event.tracks):
         if track.id not in sonified_object_ids:
             track_sound = sonify_track(
-                sonified_ids, track, subject.tracks[index+1:], subject.clusters
+                sonified_ids, track, event.tracks[index+1:], event.clusters
             )
             sound.add_track(track_sound).add_blank(SECONDS_BETWEEN_ELEMENTS)
 
-    for cluster in subject.clusters:
+    for cluster in event.clusters:
         if cluster.id not in sonified_ids:
             cluster_sound = sonify_cluster(cluster)
             sound.add_track(cluster_sound).add_blank(SECONDS_BETWEEN_ELEMENTS)
@@ -54,7 +54,7 @@ def sonify_subject(subject: Subject) -> tuple[AudioTrack, Figure]:
 
 
 def sonify_track(
-    sonified_ids: set[str], track: Track, other_tracks: list[Track], clusters: list[Cluster]
+    sonified_ids: set[str], track: ParticleTrack, other_tracks: list[ParticleTrack], clusters: list[Cluster]
 ) -> AudioTrack:
     """
     This method allows to iterate through a given event ploting and sonifying
