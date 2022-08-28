@@ -1,11 +1,12 @@
-#!/usr/bin/env python
- 
+from importlib import resources
 from pathlib import Path
 
+from sonouno_lhc import data
 from sonouno_lhc.lhc_data import sonify_subject
 from sonouno_lhc.io import extract_subjects
 
-OUTPUT_PATH = Path('outputs')
+DATA = resources.files(data)
+OUTPUT_PATH = Path('sonouno-lhc-outputs')
 OUTPUT_PATH.mkdir(exist_ok=True)
 
 
@@ -15,12 +16,12 @@ def sonify_subjects(path: Path) -> None:
         sound, fig = sonify_subject(subject)
 
         # Save the plot
-        plot_path = OUTPUT_PATH / f'plot_dataset_{subject.id}.png'
+        plot_path = OUTPUT_PATH / f'plot-dataset-{subject.id}.png'
         fig.savefig(plot_path, format='png')
 
         # Generate the wav file with the sonification
-        sound_path = OUTPUT_PATH / f'sound_dataset_{subject.id}.wav'
+        sound_path = OUTPUT_PATH / f'sound-dataset-{subject.id}.wav'
         sound.to_wav(sound_path)
 
 
-sonify_subjects(Path('sonification_reduced.txt'))
+sonify_subjects(DATA / 'sonification_reduced.txt')

@@ -3,7 +3,7 @@ __pycache__/
 dist/
 build/
 *egg-info/
-outputs/
+sonouno-lhc-outputs/
 profile.pstats
 profile.svg
 venv/

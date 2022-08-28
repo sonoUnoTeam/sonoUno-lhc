@@ -3,20 +3,18 @@
 ## Installation
 
 ```bash
-python3 -mvenv venv
-source venv/bin/activate
-pip install -r requirements.txt
+pip install sonouno-lhc
 ```
 
 ## Run the data sample
 
 ```bash
-python lhc_bash.py
+python -m sonouno_lhc
 ```
 
 ## Inspect results
 
 ```bash
-mplayer outputs/sound_dataset_326146241.wav
-eog plot_dataset_326146241.png
+mplayer sonouno-lhc-outputs/sound-dataset-326146241.wav
+eog sonouno-lhc-outputs/plot-dataset-326146241.png
 ```
