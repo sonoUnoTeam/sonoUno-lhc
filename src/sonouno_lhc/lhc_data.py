@@ -126,7 +126,6 @@ def sonify_track(
                 if include_plot:
                     lhc_plot.plot_innertrack(track2)
                 converted_photon = track2.id
-                print(converted_photon)
 
     """
     Sonification part
@@ -144,9 +143,7 @@ def sonify_track(
         cluster = cluster_tosonify[0]
 
         if converted_photon == ' ':
-            print(
-                'Sonifying ' + track.id + ' and ' + cluster.id
-            )
+            print(f'Sonifying {track.id} and {cluster.id}')
             if track.is_muon:
                 # The element is a muon with cluster
                 """
@@ -180,7 +177,7 @@ def sonify_track(
             3) a tone with different frequency: change from inner detector to red calorimeter
             4) sound corresponding to the cluster
             """
-            print(f'Sonifying {track.id}, {converted_photon} and {cluster.id}')
+            print(f'Sonifying {track.id}, converted photon {converted_photon} and {cluster.id}')
             sound = lhc_sonification.doubletrack_withcluster(
                 cluster.energy / 100
             )
@@ -225,5 +222,5 @@ def sonify_cluster(cluster: Cluster, include_plot: bool) -> AudioTrack:
     3) a tone with different frequency: change from inner detector to red calorimeter
     4) sound corresponding to the cluster
     """
-    print('Sonifying ' + cluster.id)
+    print(f'Sonifying {cluster.id}')
     return lhc_sonification.cluster_only(cluster.energy / 100)
