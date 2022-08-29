@@ -19,7 +19,6 @@ MAX_AMPLITUDE = np.iinfo('int16').max
 DEFAULT_AMPLITUDE = MAX_AMPLITUDE / 16  # ~2048
 
 
-@cache
 def get_bip() -> Track:
     """Returns the bip sound.
     
