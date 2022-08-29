@@ -166,7 +166,7 @@ def sonify_track(
                 3) a tone with different frequency: change from inner detector to red calorimeter
                 4) sound corresponding to the cluster
                 """
-                sound = lhc_sonification.singletrack_withcluster(
+                sound = lhc_sonification.singletrack_with_cluster(
                     cluster.energy / 100
                 )
         else:

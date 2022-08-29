@@ -81,7 +81,7 @@ def muontrack_with_cluster(amplitude: float) -> Track:
     return sound
 
 
-def singletrack_withcluster(amplitude: float) -> Track:
+def singletrack_with_cluster(amplitude: float) -> Track:
     """
     This method generates the sound of a single track with cluster and returns
     the array. It includes tickmarks indicating the beginning and transition
