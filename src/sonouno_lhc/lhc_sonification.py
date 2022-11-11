@@ -80,6 +80,20 @@ def muontrack_with_cluster(amplitude: float) -> Track:
     sound.add_blank(0.5)
     return sound
 
+def muontrack_only() -> Track:
+    """
+    This method generate the sound of a muon track without cluster and return 
+    the array. Include tickmarks indicating the beginning and transition 
+    between inner detector and green calorimeter.
+    """
+    sound = get_bip()
+    add_innersingletrack(sound)
+    add_tickmark_inner_calorimeter(sound)
+    cue = sound.duration
+    add_innersingletrack(sound.set_cue_write(cue), duration=1)
+    add_innersingletrack(sound)
+    sound.add_blank(0.5)
+    return sound
 
 def singletrack_with_cluster(amplitude: float) -> Track:
     """
