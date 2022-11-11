@@ -190,7 +190,7 @@ def sonify_track(
         """
         print(f'Sonifying {track.id}')
         if track.is_muon:
-            sound = lhc_sonification.doubletrack_only()
+            sound = lhc_sonification.muontrack_only()
         else:
             sound = lhc_sonification.singletrack_only()
 
